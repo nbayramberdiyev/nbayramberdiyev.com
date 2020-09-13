@@ -37,7 +37,7 @@ const ScrollTopButton = ({ scrollStepInPx, delay }) => {
     }
 
     return show ? (
-        <StyledButton className="btn-scroll-top" onClick={scrollToTop}>
+        <StyledButton onClick={scrollToTop}>
             <ArrowUp />
         </StyledButton>
     ) : null

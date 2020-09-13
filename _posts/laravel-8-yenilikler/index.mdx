@@ -38,13 +38,13 @@ Kurulum ve kullanımına ayrı bir yazıya konu olacak nitelikte olduğundan bur
 
 ## Models Klasörü
 
-Laravel'in önceki versiyonlarında Eloquent model dosyalarının varsayılan yeri `app` klasörüydü. Modellerin controller veya middleware dosyalarına benzer özel bir klasörü yoktu. Bunun nedenini Laravel, <U>Models</U> kelimesinin farklı geliştirciler için farklı anlamlara gelebileceğinden kafalarda karışıklık yaratması şeklinde <a href="https://laravel.com/docs/7.x/structure#introduction" target="_blank">açıklıyor</a>. Örneğin, model bazı geliştiriciler için uygulamanın tüm business logic’i anlamına gelirken bazı geliştiriciler içinse (ben dahil) ilişkisel veritabanı ile ilgili işlemleri yapmamızı sağlayan sınıf/obje anlamına gelmektedir.
+Laravel'in önceki versiyonlarında Eloquent model dosyalarının varsayılan yeri `app` klasörüydü. Modellerin controller veya middleware dosyalarına benzer özel bir klasörü yoktu. Bunun nedenini Laravel, <U>Models</U> kelimesinin farklı geliştiriciler için farklı anlamlara gelebileceğinden kafalarda karışıklık yaratması şeklinde <a href="https://laravel.com/docs/7.x/structure#introduction" target="_blank">açıklıyor</a>. Örneğin model, bazı geliştiriciler için uygulamanın tüm business logic’i anlamına gelirken bazı geliştiriciler içinse (ben dahil) ilişkisel veritabanı ile ilgili işlemleri yapmamızı sağlayan sınıf/obje anlamına gelmektedir.
 
 Model dosyalarının derli toplu olması için manuel olarak `app/Models` klasörü oluşturuyorduk. Topluluğun yoğun talebi üzerine artık Eloquent model dosyalarımızın varsayılan yeri `app/Models` olacak. Tüm Artisan komutları da buna duyarlı olacak. Yani eğer projede `app/Models` klasörü varsa, framework onu model klasörü olarak varsayacak. Yoksa da, eskisi gibi `app` klasörünü kullanmaya devam edecek. 🎉
 
 ## Model Factory Sınıfları
 
-Eskiden model factory'leri sınıf tabanlı değildi ve `factory` global fonksiyonu ile test verileri oluşturabiliyorduk. Laravel 8'de bu fonksiyon kaldırıldı ve factory'ler sınıf tabanlı olacak şekilde tamamiyle yeniden yazıldı. Artık her modelde `HasFactory` traiti olacak ve modellerin kendine ait factory sınıfları olacak.
+Eskiden model factory'leri sınıf tabanlı değildi ve `factory` global fonksiyonu ile test verileri oluşturabiliyorduk. Laravel 8'de bu fonksiyon kaldırıldı ve factory'ler sınıf tabanlı olacak şekilde tamamiyle yeniden yazıldı. Artık her modelde `HasFactory` trait'i olacak ve modellerin kendine ait factory sınıfları olacak.
 
 Örneğin, yeni Laravel projesi oluşturduğumuzda `database/factories` klasörü içinde `UserFactory.php` dosyası bulunuyor. Bu dosyanın içeriği eskiden şu şekildeydi:
 
@@ -118,7 +118,7 @@ Ve şu şekilde kullanabileceğiz:
 $users = App\Models\User::factory()->count(10)->make(); // Test amaçlı 10 tane kullanıcı oluştur.
 ```
 
-Factory'ler sınıf tabanlı olacağından dolayı içine ihtiyaç duyduğumuz metodları yazabiliriz. Yukarıdaki örnek üzerinden gidecek olursak, kullanıcıların `status` değerlerini tuttuğumuzu ve `status` değerinin `active` olduğu 10 tane kullanıcı oluşturmak istediğimizi varsayalım. Bunu yapmak için kendi metodumuzu yazmalıyız ve base `Factory` sınıfının `state` metodunu kullanmalıyız:
+Factory'ler sınıf tabanlı olacağından dolayı içine ihtiyaç duyduğumuz metodları yazabiliriz. Yukarıdaki örnek üzerinden gidecek olursak, kullanıcıların `status` değerlerini tuttuğumuzu ve `status` değerinin `active` olduğu 10 kullanıcı oluşturmak istediğimizi varsayalım. Bunu yapmak için kendi metodumuzu yazmalıyız ve base `Factory` sınıfının `state` metodunu kullanmalıyız:
 
 ```php
 /**
@@ -184,13 +184,13 @@ Son olarak, eğer factory'leri eski yöntemle kullanmaya devam etmek veya upgrad
 
 Uzun zamandır geliştirdiğimiz projelerde migration dosyaları gitgide artmaktadır. Veritabanında yaptığımız her değişiklik için bir migration dosyası oluşturuyoruz. Bu da zamanla `database/migrations` klasörünün şişmesine neden olacaktır. Örneğin, çalıştığım <a href="https://bulutfiloyonetimi.com/" target="_blank">projede</a> 600'den fazla migration dosyası var.
 
-Eğer MySQL veya PostgreSQL kullanıyorsak, Laravel 8 itibariyle veritabanı şemamızı tek bir SQL dosyasında tutarak eski migration dosyalarını silebiliriz. Bu işlemi yapmak şu komutu çalıştırmalıyız:
+Eğer MySQL veya PostgreSQL kullanıyorsak, Laravel 8 itibariyle veritabanı şemamızı tek bir SQL dosyasında tutarak eski migration dosyalarını silebiliriz. Bu işlemi yapmak için şu komutu çalıştırmalıyız:
 
 ```bash
 php artisan schema:dump
 ```
 
-Eğer migration dosyalarının da beraberin otomatik olarak silinmesini istiyorsak şunu çalıştırmamız yeterli olacaktır:
+Eğer migration dosyalarının da beraberinde otomatik olarak silinmesini istiyorsak şunu çalıştırmamız yeterli olacaktır:
 
 ```bash
 php artisan schema:dump --prune
@@ -214,14 +214,14 @@ Bu komutu çalıştırdıktan sonra `database/schema` klasöründe veritabanı �
 
 Job batching özelliği `Bus` facade'ı yardımıyla toplu şekilde job çalıştırmamıza ve bu süreci kolayca yönetmemize imkân sağlıyor. Örneğin, birkaç job işlemimiz var ve bu görevleri aynı anda çalıştırmak istiyoruz. Hemen aklımıza şu sorular takılabilir; _hata çıktığı anda bunu nasıl tespit edebiliriz?_ veya _tüm işlemlerin tamamlandığını nasıl anlarız?_ İşte tam bu noktada `then`, `catch` ve `finally` callback'leri imdadımıza koşuyor.
 
-Bu özelliği kullanmadan önce veritabanında job bilgilerinin tutulacağı tabloyu oluşturmamız gerekiyor. Bunun aşağıdaki komutları çalıştırmalıyız:
+Bu özelliği kullanmadan önce veritabanında job bilgilerinin tutulacağı tabloyu oluşturmamız gerekiyor. Bunun için aşağıdaki komutları çalıştırmalıyız:
 
 ```bash
 php artisan queue:batches-table
 php artisan migrate
 ```
 
-Daha sonra oluşturacağımız job'lara `Illuminate\Bus\Batchable` traitini eklememiz gerekiyor:
+Daha sonra oluşturacağımız job'lara `Illuminate\Bus\Batchable` trait'ini eklememiz gerekiyor:
 
 ```php
 <?php
@@ -664,7 +664,7 @@ Geliştirme ortamında, `.env` dosyasını güncellediğimizde `serve` komutuyla
 
 Daha önceleri varsayılan pagination view'leri <a href="https://getbootstrap.com" target="_blank">Bootstrap</a> ile gelirdi. Laravel 8'den itibaren Bootstrap yerine <a href="https://tailwindcss.com" target="_blank">Tailwind CSS</a> varsayılan olarak desteklenecek.
 
-Eskisi gibi Bootstrap kullanmaya devam etmek istiyorsanız, `Paginator` sınıfının `useBootstrap` metodunu `AppServiceProvider` içindeki çağırmanız yeterli olacaktır:
+Eskisi gibi Bootstrap kullanmaya devam etmek istiyorsanız, `Paginator` sınıfının `useBootstrap` metodunu `AppServiceProvider` içinde çağırmanız yeterli olacaktır:
 
 ```php:title=app/Providers/AppServiceProvider.php
 use Illuminate\Pagination\Paginator;

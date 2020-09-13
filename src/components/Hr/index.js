@@ -18,10 +18,7 @@ export default Hr
 
 const StyledHr = styled.hr`
     display: block;
-    height: 1;
     border: 0;
-    border-top: 1px;
-    border-top-style: solid;
     width: ${props => props.width};
     margin: ${props => props.margin};
 `

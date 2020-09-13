@@ -311,7 +311,7 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     .custom-hr {
-        border-top-color: ${() => setThemeVars('#e7e6e8', '#414044')};
+        border-top: 1px solid ${() => setThemeVars('#e7e6e8', '#414044')};
     }
 
     .icon-hand-ptr {

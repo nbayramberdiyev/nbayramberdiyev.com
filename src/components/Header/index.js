@@ -20,13 +20,13 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://github.com/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
+                        aria-label="GitHub"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 496 512"
                             role="img"
-                            aria-hidden="true"
                             focusable="false"
                             className="svg-inline--fa fa-w-16 icon-fa"
                         >
@@ -42,13 +42,13 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://stackoverflow.com/users/8256347/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
+                        aria-label="Stackoverflow"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 496 512"
                             role="img"
-                            aria-hidden="true"
                             focusable="false"
                             className="svg-inline--fa fa-w-16 icon-fa"
                         >
@@ -64,13 +64,13 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://twitter.com/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
+                        aria-label="Twitter"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                             role="img"
-                            aria-hidden="true"
                             focusable="false"
                             className="svg-inline--fa fa-w-16 icon-fa"
                         >
@@ -86,13 +86,13 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://linkedin.com/in/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
+                        aria-label="Linkedin"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
                             role="img"
-                            aria-hidden="true"
                             focusable="false"
                             className="svg-inline--fa fa-w-16 icon-fa"
                         >

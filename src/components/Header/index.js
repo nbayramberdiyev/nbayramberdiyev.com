@@ -20,7 +20,7 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://github.com/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         aria-label="GitHub"
                     >
                         <svg
@@ -42,7 +42,7 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://stackoverflow.com/users/8256347/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         aria-label="Stackoverflow"
                     >
                         <svg
@@ -64,7 +64,7 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://twitter.com/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         aria-label="Twitter"
                     >
                         <svg
@@ -86,7 +86,7 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
                         className="icon-fa-link"
                         href="https://linkedin.com/in/nbayramberdiyev"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         aria-label="Linkedin"
                     >
                         <svg

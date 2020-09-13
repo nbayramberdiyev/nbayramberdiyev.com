@@ -10,7 +10,7 @@ const Footer = () => {
             <div />
             <div>
                 <span>© {new Date().getFullYear()} </span>
-                <StyledA href="/" target="_blank" rel="noopener noreferrer">
+                <StyledA href="/" target="_blank" rel="noopener">
                     nbayramberdiyev
                 </StyledA>
                 . Built with {` `}
@@ -23,7 +23,7 @@ const Footer = () => {
                 </StyledA>
                 .
             </div>
-            <Link to="/rss.xml">
+            <Link to="/rss.xml" aria-label="RSS">
                 <StyledRSS />
             </Link>
         </StyledFooter>

@@ -187,7 +187,7 @@ $base6: #e48080;
 code[class*='language-'],
 pre[class*='language-'] {
     color: $base0;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     text-align: left;
     white-space: pre;
     word-spacing: normal;
@@ -195,11 +195,11 @@ pre[class*='language-'] {
     word-wrap: normal;
     background: transparent !important;
 
-    line-height: 1.5;
+    line-height: 2;
 
-    tab-size: 2;
-    -moz-tab-size: 2;
-    -o-tab-size: 2;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
 
     hyphens: none;
     -webkit-hyphens: none;
@@ -313,14 +313,14 @@ pre[class*='language-'] {
     code[class*='language-'],
     pre[class*='language-'],
     .code-title-custom {
-        font-size: 0.7rem;
+        font-size: 0.875rem;
         .token {
-            font-size: 0.7rem;
+            font-size: 0.875rem;
         }
     }
 
     .live-error {
-        font-size: 0.8rem;
+        font-size: 0.875rem;
     }
 
     // Decrease empty line height

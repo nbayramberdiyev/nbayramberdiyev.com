@@ -73,12 +73,16 @@ const StyledTextBlock = styled.div`
     padding: 1rem;
 
     /* Default for primary */
-    border-color: ${() => setThemeVars('#666', theme.fontColorDark)};
-    background: ${() => setThemeVars('#f6f5f8', `#36353b`)};
+    /*border-color: ${() => setThemeVars('#666', theme.fontColorDark)};
+    background: ${() => setThemeVars('#f6f5f8', `#36353b`)};*/
     /* Based on chosen theme */
     border-color: ${props => color[props.theme]};
     background: ${props =>
         setThemeVars(bgColorLight[props.theme], bgColorDark[props.theme])};
+
+    p {
+        margin-top: 0;
+    }
 `
 
 const StyledIconWrap = styled.div`

@@ -25,8 +25,13 @@ class CustomSwitch extends Component {
 
     render() {
         return (
-            <label className="custom-switch" style={{ display: 'block' }}>
+            <label
+                className="custom-switch"
+                htmlFor="switcher"
+                style={{ display: 'block' }}
+            >
                 <Switch
+                    id="switcher"
                     onChange={this.handleToggle}
                     checked={this.state.checked}
                     offColor="#bbb"

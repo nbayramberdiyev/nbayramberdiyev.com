@@ -165,12 +165,6 @@ const codeBlockStyles = createGlobalStyle`
             font-size: 90%;
         }
     }
-
-    @media (max-width: 500px) {
-        html {
-            font-size: 85%;
-        }
-    }
   `
 
 export default codeBlockStyles

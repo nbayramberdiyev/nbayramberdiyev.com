@@ -261,7 +261,6 @@ const StyledHTML = styled.div`
     padding: 1rem;
     font-family: ${configStyles.fontMain + configStyles.fontsBackUp};
     margin-top: 1rem;
-    font-size: 105%;
     h1 {
         margin-top: 2.5rem;
     }
@@ -291,9 +290,10 @@ const StyledHTML = styled.div`
         margin-top: 0.6rem;
     }
 
-    p {
+    > p {
         margin-top: 0.9rem;
-        line-height: 1.4;
+        line-height: 1.75;
+        font-size: 1.125rem;
     }
 
     blockquote {
@@ -315,6 +315,7 @@ const StyledHTML = styled.div`
 
     a {
         color: steelblue;
+        font-size: 1.125rem;
     }
 
     ul {
@@ -323,7 +324,7 @@ const StyledHTML = styled.div`
         li {
             display: flex;
             justify-content: flex-start;
-            margin: 0.5rem 0;
+            margin: 0.75rem 0;
             /* Custom list for ul */
             .icon-wrap {
                 svg.icon-chevron-right {

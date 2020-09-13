@@ -17,8 +17,6 @@ const Hr = ({ verticalMargin, widthInPercent, ...otherProps }) => {
 export default Hr
 
 const StyledHr = styled.hr`
-    display: block;
-    border: 0;
     width: ${props => props.width};
     margin: ${props => props.margin};
 `

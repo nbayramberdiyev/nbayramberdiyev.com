@@ -311,6 +311,8 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     .custom-hr {
+        display: block;
+        border: 0;
         border-top: 1px solid ${() => setThemeVars('#e7e6e8', '#414044')};
     }
 

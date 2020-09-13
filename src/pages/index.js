@@ -44,7 +44,7 @@ const IndexPage = ({ data }) => {
 
     return (
         <Layout>
-            <SEO title="Home" />
+            <SEO title="Kişisel Blog" />
             <MainCard posts={posts} loads={loaded} />
         </Layout>
     )

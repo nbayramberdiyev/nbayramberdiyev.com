@@ -7,7 +7,7 @@ excerpt: Laravel 8'in pastırma tadındaki yeni özellikleri
 
 2011 yılında ilk versiyonuyla web development âlemine "merhaba" diyen Laravel’in bu hafta (08.09.2020) itibariyle 8. versiyonu resmi olarak kullanıma sunuldu.
 
-Yeniliklere baktığımızda breaking change olmamakla birlikte <a href="https://github.com/laravel/jetstream" target="_blank">Laravel Jetstream</a>, model factory sınıfları, migration squashing, job batching, daha gelişmiş rate limiting, queue iyileştirmeleri ve dinamik Blade component'leri gibi özelliklerin tanıtıldığını ve Laravel 7'deki geliştirmelere/iyileştirmelere devam edildiğini görebiliriz. Developer deneyimini daha da ileri taşıyacak olan yeni özellikleri aşağıda ele aldım:
+Yeniliklere baktığımızda breaking change olmamakla birlikte <a href="https://github.com/laravel/jetstream" target="_blank" rel="nofollow noopener noreferrer">Laravel Jetstream</a>, model factory sınıfları, migration squashing, job batching, daha gelişmiş rate limiting, queue iyileştirmeleri ve dinamik Blade component'leri gibi özelliklerin tanıtıldığını ve Laravel 7'deki geliştirmelere/iyileştirmelere devam edildiğini görebiliriz. Developer deneyimini daha da ileri taşıyacak olan yeni özellikleri aşağıda ele aldım:
 
 -   [Laravel JetStream](#laravel-jetstream)
 -   [Models Klasörü](#models-klasörü)
@@ -28,17 +28,17 @@ Yeniliklere baktığımızda breaking change olmamakla birlikte <a href="https:/
 
 Hemen hemen her uygulamanın ihtiyaç duyabileceği kullanıcı girişi/kaydı, e-posta doğrulama, two-factor authentication (2FA), session yönetimi, API authentication gibi özellikleri içinde barındıran Laravel ekosisteminin yeni ürünü Laravel Jetstream, bir Laravel uygulaması için başlangıç şablonu (iskelesi) diyebiliriz.
 
-Daha önce, <a href="https://github.com/laravel/ui" target="_blank">`laravel/ui`</a> paketi uygulamamızda authentication işlemlerini otomatik olarak yapmamıza imkân sağlıyordu. Laravel Jetstream ise bu paketin daha gelişmiş hali olarak düşünebiliriz. Arayüzü <a href="https://tailwindcss.com" target="_blank">Tailwind CSS</a> ile geliştirilen Laravel JetStream, isteğe bağlı olarak <a href="https://github.com/livewire/livewire" target="_blank">Livewire</a> veya <a href="https://github.com/inertiajs/inertia-laravel" target="_blank">Inertia</a> ile birlikte kullanılabilir.
+Daha önce, <a href="https://github.com/laravel/ui" target="_blank" rel="nofollow noopener noreferrer">`laravel/ui`</a> paketi uygulamamızda authentication işlemlerini otomatik olarak yapmamıza imkân sağlıyordu. Laravel Jetstream ise bu paketin daha gelişmiş hali olarak düşünebiliriz. Arayüzü <a href="https://tailwindcss.com" target="_blank" rel="nofollow noopener noreferrer">Tailwind CSS</a> ile geliştirilen Laravel JetStream, isteğe bağlı olarak <a href="https://github.com/livewire/livewire" target="_blank" rel="nofollow noopener noreferrer">Livewire</a> veya <a href="https://github.com/inertiajs/inertia-laravel" target="_blank" rel="nofollow noopener noreferrer">Inertia</a> ile birlikte kullanılabilir.
 
-Laravel Jetstream web authentication işlemleri için <a href="https://github.com/laravel/fortify" target="_blank">Laravel Fortify</a>, token bazlı authentication (SPA, mobil uygulamalar) için ise <a href="https://github.com/laravel/sanctum" target="_blank">Laravel Sanctum</a> kullanmakta.
+Laravel Jetstream web authentication işlemleri için <a href="https://github.com/laravel/fortify" target="_blank" rel="nofollow noopener noreferrer">Laravel Fortify</a>, token bazlı authentication (SPA, mobil uygulamalar) için ise <a href="https://github.com/laravel/sanctum" target="_blank" rel="nofollow noopener noreferrer">Laravel Sanctum</a> kullanmakta.
 
-Kurulum ve kullanımına ayrı bir yazıya konu olacak nitelikte olduğundan burada yer vermedim. Detaylı bilgiler için <a href="https://jetstream.laravel.com" target="_blank">dokümantasyonuna</a> bakabilirsiniz.
+Kurulum ve kullanımına ayrı bir yazıya konu olacak nitelikte olduğundan burada yer vermedim. Detaylı bilgiler için <a href="https://jetstream.laravel.com" target="_blank" rel="nofollow noopener noreferrer">dokümantasyonuna</a> bakabilirsiniz.
 
 ![](./laravel-jetstream.png)
 
 ## Models Klasörü
 
-Laravel'in önceki versiyonlarında Eloquent model dosyalarının varsayılan yeri `app` klasörüydü. Modellerin controller veya middleware dosyalarına benzer özel bir klasörü yoktu. Bunun nedenini Laravel, <U>Models</U> kelimesinin farklı geliştiriciler için farklı anlamlara gelebileceğinden kafalarda karışıklık yaratması şeklinde <a href="https://laravel.com/docs/7.x/structure#introduction" target="_blank">açıklıyor</a>. Örneğin model, bazı geliştiriciler için uygulamanın tüm business logic’i anlamına gelirken bazı geliştiriciler içinse (ben dahil) ilişkisel veritabanı ile ilgili işlemleri yapmamızı sağlayan sınıf/obje anlamına gelmektedir.
+Laravel'in önceki versiyonlarında Eloquent model dosyalarının varsayılan yeri `app` klasörüydü. Modellerin controller veya middleware dosyalarına benzer özel bir klasörü yoktu. Bunun nedenini Laravel, <U>Models</U> kelimesinin farklı geliştiriciler için farklı anlamlara gelebileceğinden kafalarda karışıklık yaratması şeklinde <a href="https://laravel.com/docs/7.x/structure#introduction" target="_blank" rel="nofollow noopener noreferrer">açıklıyor</a>. Örneğin model, bazı geliştiriciler için uygulamanın tüm business logic’i anlamına gelirken bazı geliştiriciler içinse (ben dahil) ilişkisel veritabanı ile ilgili işlemleri yapmamızı sağlayan sınıf/obje anlamına gelmektedir.
 
 Model dosyalarının derli toplu olması için manuel olarak `app/Models` klasörü oluşturuyorduk. Topluluğun yoğun talebi üzerine artık Eloquent model dosyalarımızın varsayılan yeri `app/Models` olacak. Tüm Artisan komutları da buna duyarlı olacak. Yani eğer projede `app/Models` klasörü varsa, framework onu model klasörü olarak varsayacak. Yoksa da, eskisi gibi `app` klasörünü kullanmaya devam edecek. 🎉
 
@@ -175,14 +175,14 @@ Burada dikkatli olmamız gereken bir nokta var; `make` metodu oluşturulan veril
 Son olarak, eğer factory'leri eski yöntemle kullanmaya devam etmek veya upgrade sürecini kolaylaştırmak/hızlandırmak istiyorsanız [`laravel/legacy-factories`](https://github.com/laravel/legacy-factories) paketini kullanabilirsiniz.
 
 <Collapsable title="Kaynak" titleSize="1rem">
-    <a href="https://laravel.com/docs/8.x/database-testing" target="_blank">
+    <a href="https://laravel.com/docs/8.x/database-testing" target="_blank" rel="nofollow noopener noreferrer">
         Database Testing
     </a>
 </Collapsable>
 
 ## Migration Squashing
 
-Uzun zamandır geliştirdiğimiz projelerde migration dosyaları gitgide artmaktadır. Veritabanında yaptığımız her değişiklik için bir migration dosyası oluşturuyoruz. Bu da zamanla `database/migrations` klasörünün şişmesine neden olacaktır. Örneğin, çalıştığım <a href="https://bulutfiloyonetimi.com/" target="_blank">projede</a> 600'den fazla migration dosyası var.
+Uzun zamandır geliştirdiğimiz projelerde migration dosyaları gitgide artmaktadır. Veritabanında yaptığımız her değişiklik için bir migration dosyası oluşturuyoruz. Bu da zamanla `database/migrations` klasörünün şişmesine neden olacaktır. Örneğin, çalıştığım <a href="https://bulutfiloyonetimi.com/" target="_blank" rel="nofollow noopener noreferrer">projede</a> 600'den fazla migration dosyası var.
 
 Eğer MySQL veya PostgreSQL kullanıyorsak, Laravel 8 itibariyle veritabanı şemamızı tek bir SQL dosyasında tutarak eski migration dosyalarını silebiliriz. Bu işlemi yapmak için şu komutu çalıştırmalıyız:
 
@@ -205,6 +205,7 @@ Bu komutu çalıştırdıktan sonra `database/schema` klasöründe veritabanı �
     <a
         href="https://laravel.com/docs/8.x/migrations#squashing-migrations"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Squashing Migrations
     </a>
@@ -382,7 +383,7 @@ php artisan queue:retry-batch 32dbc76c-4f82-4749-b610-a639fe0099b5 # Batch'in UU
 ```
 
 <Collapsable title="Kaynak" titleSize="1rem">
-    <a href="https://laravel.com/docs/8.x/queues#job-batching" target="_blank">
+    <a href="https://laravel.com/docs/8.x/queues#job-batching" target="_blank" rel="nofollow noopener noreferrer">
         Job Batching
     </a>
 </Collapsable>
@@ -475,6 +476,7 @@ Route::middleware(['throttle:uploads'])->group(function () {
     <a
         href="https://laravel.com/docs/8.x/routing#rate-limiting"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Rate Limiting
     </a>
@@ -514,6 +516,7 @@ php artisan down --render="errors::503"
     <a
         href="https://laravel.com/docs/8.x/configuration#maintenance-mode"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Maintenance Mode
     </a>
@@ -537,6 +540,7 @@ dispatch(function () use ($podcast) {
     <a
         href="https://laravel.com/docs/8.x/queues#queueing-closures"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Queueing Closures
     </a>
@@ -554,6 +558,7 @@ Bazı durumlarda dinamik olarak Blade component'i render etmemiz gerekebilir. Bu
     <a
         href="https://laravel.com/docs/8.x/blade#dynamic-components"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Dynamic Components
     </a>
@@ -615,6 +620,7 @@ Event::listen(queueable(function (PodcastProcessed $event) {
     <a
         href="https://laravel.com/docs/8.x/events#queuable-anonymous-event-listeners"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Queueable Anonymous Event Listeners
     </a>
@@ -651,6 +657,7 @@ public function testTimeCanBeManipulated()
     <a
         href="https://laravel.com/docs/8.x/mocking#interacting-with-time"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Interacting With Time
     </a>
@@ -662,7 +669,7 @@ Geliştirme ortamında, `.env` dosyasını güncellediğimizde `serve` komutuyla
 
 ## Tailwind İle Pagination Linkleri
 
-Daha önceleri varsayılan pagination view'leri <a href="https://getbootstrap.com" target="_blank">Bootstrap</a> ile gelirdi. Laravel 8'den itibaren Bootstrap yerine <a href="https://tailwindcss.com" target="_blank">Tailwind CSS</a> varsayılan olarak desteklenecek.
+Daha önceleri varsayılan pagination view'leri <a href="https://getbootstrap.com" target="_blank" rel="nofollow noopener noreferrer">Bootstrap</a> ile gelirdi. Laravel 8'den itibaren Bootstrap yerine <a href="https://tailwindcss.com" target="_blank" rel="nofollow noopener noreferrer">Tailwind CSS</a> varsayılan olarak desteklenecek.
 
 Eskisi gibi Bootstrap kullanmaya devam etmek istiyorsanız, `Paginator` sınıfının `useBootstrap` metodunu `AppServiceProvider` içinde çağırmanız yeterli olacaktır:
 
@@ -680,12 +687,13 @@ public function boot()
 }
 ```
 
-Tailwind CSS ve Bootstrap dışında <a href="https://semantic-ui.com" target="_blank">Semantic UI</a> da desteklenen framework'ler arasında.
+Tailwind CSS ve Bootstrap dışında <a href="https://semantic-ui.com" target="_blank" rel="nofollow noopener noreferrer">Semantic UI</a> da desteklenen framework'ler arasında.
 
 <Collapsable title="Kaynak" titleSize="1rem">
     <a
         href="https://laravel.com/docs/8.x/pagination#customizing-the-pagination-view"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Customizing The Pagination View
     </a>
@@ -725,6 +733,7 @@ Bu güncelleme sadece <U>yeni</U> Laravel 8 uygulamaları için geçerli olup, e
     <a
         href="https://laravel.com/docs/8.x/routing"
         target="_blank"
+        rel="nofollow noopener noreferrer"
     >
         Routing
     </a>

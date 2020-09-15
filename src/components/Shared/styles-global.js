@@ -410,7 +410,7 @@ export const GlobalStyles = createGlobalStyle`
 
     #gatsby-focus-wrapper {
         height: 100%;
-        background-color: ${() =>
+        background: ${() =>
             setThemeVars(theme.bgSubColorLight, theme.bgSubColorDark)};
     }
 `

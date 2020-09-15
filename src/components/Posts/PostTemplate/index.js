@@ -143,6 +143,7 @@ class PostTemplate extends React.Component {
                 <SEO
                     title={post.frontmatter.title}
                     description={post.excerpt}
+                    isPostTemplate
                 />
                 <div
                     className="switch-container"

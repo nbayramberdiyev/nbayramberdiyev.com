@@ -3,9 +3,9 @@ const rss = require('./gatsby-rss')
 
 module.exports = {
     siteMetadata: {
-        title: 'nbayramberdiyev',
+        title: "N'Bayramberdiyev",
         author: 'nbayramberdiyev',
-        description: '',
+        description: 'Kişisel blog sitesi',
         siteUrl: 'https://nbayramberdiyev.com',
     },
     plugins: [

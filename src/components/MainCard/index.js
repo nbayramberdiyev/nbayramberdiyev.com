@@ -221,7 +221,7 @@ const StyledSwitchContainer = styled.div`
     text-align: end;
     margin: 0 0.4rem;
     top: 12px;
-    right: 25px;
+    right: 22px;
     z-index: 2;
 
     @media (max-width: 500px) {

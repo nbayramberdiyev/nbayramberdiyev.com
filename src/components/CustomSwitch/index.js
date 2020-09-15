@@ -25,11 +25,10 @@ class CustomSwitch extends Component {
 
     render() {
         return (
-            <label
-                className="custom-switch"
-                htmlFor="switcher"
-                style={{ display: 'block' }}
-            >
+            <div className="custom-switch">
+                <label htmlFor="switcher" style={{ display: 'none' }}>
+                    {' '}
+                </label>
                 <Switch
                     id="switcher"
                     onChange={this.handleToggle}
@@ -44,7 +43,7 @@ class CustomSwitch extends Component {
                     onHandleColor="#333"
                     aria-checked={this.state.checked}
                 />
-            </label>
+            </div>
         )
     }
 }

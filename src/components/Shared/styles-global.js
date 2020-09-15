@@ -407,10 +407,4 @@ export const GlobalStyles = createGlobalStyle`
     .svg-inline--fa.fa-w-16 {
         width: 1em;
     }
-
-    #gatsby-focus-wrapper {
-        height: 100%;
-        background: ${() =>
-            setThemeVars(theme.bgSubColorLight, theme.bgSubColorDark)};
-    }
 `

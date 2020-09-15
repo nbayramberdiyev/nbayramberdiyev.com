@@ -45,7 +45,7 @@ const Layout = ({ children, showTitle, isPostTemplate }) => {
                 {isPostTemplate ? (
                     <div className="post-bg-color">{childrenElement}</div>
                 ) : (
-                    <>{childrenElement}</>
+                    <div className="page-wrapper">{childrenElement}</div>
                 )}
             </ThemeProvider>
         </ThemeProvider>

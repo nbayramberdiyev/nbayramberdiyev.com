@@ -407,4 +407,10 @@ export const GlobalStyles = createGlobalStyle`
     .svg-inline--fa.fa-w-16 {
         width: 1em;
     }
+
+    .page-wrapper {
+        background: ${() =>
+            setThemeVars(theme.bgSubColorLight, theme.bgSubColorDark)};
+        height: 100%;
+    }
 `

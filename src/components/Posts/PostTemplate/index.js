@@ -294,16 +294,12 @@ const StyledHTML = styled.div`
     > p {
         margin-top: 0.9rem;
         line-height: 1.75;
-        font-size: 1.125rem;
+        font-size: 1rem;
     }
 
     blockquote {
         padding: 0.3rem 1rem;
-        margin: 0.5rem 0;
-
-        > p {
-            margin-top: 0.5rem;
-        }
+        margin-top: 0.9rem;
 
         > blockquote {
             border-left: none;
@@ -316,7 +312,7 @@ const StyledHTML = styled.div`
 
     a {
         color: steelblue;
-        font-size: 1.125rem;
+        font-size: 1rem;
     }
 
     ul {

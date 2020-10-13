@@ -187,7 +187,7 @@ $base6: #e48080;
 code[class*='language-'],
 pre[class*='language-'] {
     color: $base0;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     text-align: left;
     white-space: pre;
     word-spacing: normal;
@@ -313,14 +313,14 @@ pre[class*='language-'] {
     code[class*='language-'],
     pre[class*='language-'],
     .code-title-custom {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         .token {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
         }
     }
 
     .live-error {
-        font-size: 0.875rem;
+        font-size: 0.8rem;
     }
 
     // Decrease empty line height

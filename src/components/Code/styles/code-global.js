@@ -159,12 +159,6 @@ const codeBlockStyles = createGlobalStyle`
         border-left: 1px solid ${bgColorBorder};
         border-bottom: none;
     }
-
-    @media (max-width: 680px) {
-        html {
-            font-size: 90%;
-        }
-    }
   `
 
 export default codeBlockStyles

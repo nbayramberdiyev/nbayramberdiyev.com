@@ -3,7 +3,7 @@ const styleConfig = {
     ========================================= */
     fontMain: `'IBM Plex Sans'`, // Main Font
     fontProfile: `'Oxanium'`, // Font inside profile
-    fontCodeBlocks: `Menlo, Monaco, monospace`, // Font for code blocks
+    fontCodeBlocks: `'Fira Code', Melo, Monaco, monospace`, // Font for code blocks
 
     // These fonts will be used if above fonts are unavailable
     fontsBackUp: `, sans-serif, -apple-system, BlinkMacSystemFont,

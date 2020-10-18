@@ -760,7 +760,7 @@ class StoreArticleRequest extends FormRequest
 
 Validation kısmı için son olarak `passesAuthorization` metodundan bahsetmek istiyorum. Daha önce hiç kullanmadım, nerede ve ne zaman ihtiyacımız olur bir fikrim yok ama sakın ola `authorize` metodu içinde kullanmayın. 😅
 
-`passesAuthorization` metodu request'in authorization işleminden başarılı şekilde geçip geçmediğini tespit etmemizi sağlıyor. Bunun için form request sınıfındaki `authorize` metodunu çalıştırarak sonucunu döndürür.
+`passesAuthorization` metodu request'in authorization işleminden başarılı şekilde geçip geçmediğini tespit etmemizi sağlar. Bunun için form request sınıfındaki `authorize` metodunu çalıştırarak sonucunu döndürür.
 
 ```php
 if ($this->passesAuthorization()) {
@@ -798,7 +798,7 @@ class ArticleController extends Controller
 
 Formdan gelecek olan veriler `StoreArticleRequest` içinde tanımlanan validation kurallarını başarılı şekilde geçtiği taktirde `store` metodu tetiklenecek ve `validated` metodunu kullanarak validation süzgecinden geçen verilerimizi alabileceğiz.
 
-Gördüğünüz gibi `store` metodunu bir hayli temizledik ve controller sınıfını validation işlemlerinden kurtardık. Peki blog yazımızı güncellediğimiz `update` metodunda da bu request sınıfını kullanabilir miyiz? Eğer aynı validation kurallarına ve aynı işlemlere ihtiyacımız varsa rahatlıkla kullanabiliriz. Hatta ufak farklılıklar varsa ve zamanla karmaşık/farklı bir yapıya dönüşmeyeceğinden emin isek 2 request'i birleştirebiliriz. Örneğin, validation kurallarının farklılık gösterdiğini ve bunları birleştirme istediğimi düşünürsek şuna benzer bir yapı oluşturabiliriz:
+Gördüğünüz gibi `store` metodunu bir hayli temizledik ve controller sınıfını validation işlemlerinden kurtardık. Peki blog yazımızı güncellediğimiz `update` metodunda da bu request sınıfını kullanabilir miyiz? Eğer aynı validation kurallarına ve aynı işlemlere ihtiyacımız varsa rahatlıkla kullanabiliriz. Hatta ufak farklılıklar varsa ve zamanla karmaşık/farklı bir yapıya dönüşmeyeceğinden emin isek 2 request'i birleştirebiliriz. Örneğin, validation kurallarının farklılık gösterdiğini ve bunları birleştirmek istediğimizi düşünürsek şuna benzer bir yapı oluşturabiliriz:
 
 ```php
 protected function storeRules()
@@ -837,7 +837,7 @@ Sonuç olarak bir validation süreci için ihtiyacımız olabilecek tüm işleml
 
 ## Validation Ötesi
 
-Bazen mevcut request'e özel işlemler yapmaya ihtiyaç duyabiliriz. Veya mevcut request içinde gelen form verilerini kullanarak özel kontrol yapıları oluşturmak isteriz. Örneğin, kişisel projelerimin birinde şöyle bir form request sınıfı var:
+Bazen mevcut request'e özel işlemler yapmaya ihtiyaç duyabiliriz. Veya mevcut request içinde gelen form verilerini kullanarak özel kontrol yapıları oluşturmak isteriz. Örneğin, kişisel <a href="https://menulift.com" target="_blank" rel="nofollow noopener noreferrer">projelerimin birinde</a> şöyle bir form request sınıfı var:
 
 ```php:title=app/Http/Controllers/UpgradeSubscriptionRequest.php
 <?php

@@ -10,6 +10,11 @@ draft: false
 
 Laravel 5.0 (2015) ile beraber tanıtılan özel form request sınıfları Laravel'in nadir kullanılan ve azımsanan özelliklerinden biridir. Sadece authorization ve karmaşık validation işlemlerini kolayca yapabilmemizi sağlamak değil, aslında bunlardan daha fazlasını yaparak uygulamamıza inanılmaz faydalar ve kolaylıklar sağlayacak potansiyele sahiptirler.
 
+-   [Validation](#validation)
+    -   [1. İlk Girişim](#1-i̇lk-girişim)
+    -   [2. Ve Form Request Nimetleri](#2-ve-form-request-nimetleri)
+-   [Validation Ötesi](#validation-ötesi)
+
 ## Validation
 
 Form request'lerini birçoğumuz validation amaçlı kullanıyoruz. Nitekim Laravel dokümantasyonunun <a href="https://laravel.com/docs/master/validation#form-request-validation" target="_blank" rel="nofollow noopener noreferrer">validation bölümünde</a> yer verilmiş ve şu şekilde açıklanmış:
@@ -174,7 +179,7 @@ Böylece kod tekrarından kaçınmış ve en azından DRY prensibini sağlamış
 
 Peki bunu daha da ileriye götürebilir miyiz? Bu çok basit bir örnek, karmaşık bir validation yapısını hayal edin. Ve nasıl daha da temiz/esnek/sürdürülebilir hale getirebiliriz? "Form request'lerini kullanarak.." dediğinizi duyar gibiyim. Evet, o halde devam edelim şuradan. 👇
 
-### 2. Ve Form Request Nimetleri 🎉
+### 2. Ve Form Request Nimetleri
 
 Form request sınıfları validation işlemlerini yapmak için biçilmiş kaftandır. Hatta uygulamamızın validation katmanı olarak da düşünebiliriz.
 

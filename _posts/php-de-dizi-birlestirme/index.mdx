@@ -1,0 +1,28 @@
+---
+title: PHP'de Dizi Birleştirme
+date: 2020-11-19
+tags: [php]
+excerpt: PHP'de dizi birleştirme yöntemleri
+draft: true
+---
+
+PHP'de dizi birleştirme diyince birçoğumuzun aklına ilk olarak <a href="https://www.php.net/manual/en/function.array-merge.php" target="_blank" rel="nofollow noopener noreferrer">`array_merge`</a> fonksiyonu gelir. Çünkü esnek olarak tasarlanan bu fonksiyon çoğu durumda işimizi görür. Ama PHP'de dizi birleştirme işlemi sadece bu fonksiyon ile sınırlı değildir. PHP 5.3 ile gelen <a href="https://www.php.net/manual/en/function.array-replace.php" target="_blank" rel="nofollow noopener noreferrer">`array_replace`</a> fonksiyonu, <a href="https://www.php.net/manual/en/language.operators.array.php" target="_blank" rel="nofollow noopener noreferrer">`+`</a> (union) operatörü ve son olarak PHP 7.4 ile gelen <a href="https://wiki.php.net/rfc/spread_operator_for_array" target="_blank" rel="nofollow noopener noreferrer">spread operatörü</a> de dizi birleştirirken kullanılan yöntemler arasındadır. Ancak aralarındaki farkların dokümantasyonda tam olarak açıklanmadığını görebiliriz.
+
+Bu yöntemleri teker teker ele almadan önce <a href="https://p.softonsofa.com/php-array_merge-vs-array_replace-vs-plus-aka-union/" target="_blank" rel="nofollow noopener noreferrer">Jarek Tkaczyk</a>'tan esinlerek hazırladığım karşılaştırma görselini inceleyelim:
+
+![](./comparison.jpg)
+
+-   [`array_merge` Fonksiyonu](#array_merge-fonksiyonu)
+-   [`array_replace` Fonksiyonu](#array_replace-fonksiyonu)
+-   [`+` (Union) Operatörü](#)
+-   [Spread Operatörü](#spread-operatörü)
+
+## `array_merge` Fonksiyonu
+
+Bir veya daha fazla dizinin öğelerini <U>sırayla</U> birleştirir ve yeni bir dizi döndürür.
+
+Eğer dizilerin eşit olan string tipindeki anahtarları varsa, en sondaki öncekiyi/öncekileri ezer. Ancak, numerik anahtarları olan dizilerde herhangi bir ezme gerçekleşmez, birbirinin sonuna eklenerek birleştirme işlemi yapılır ve yeni oluşan dizi anahtarları sıfırdan başlayarak tekrardan sıralanır.
+
+PHP 7.4 itibariyla
+
+## `array_replace` Fonksiyonu

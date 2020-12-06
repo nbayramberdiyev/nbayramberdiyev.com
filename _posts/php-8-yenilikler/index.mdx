@@ -23,10 +23,13 @@ PHP, tüm eleştirilere rağmen özellikle son yıllarda aktif olarak geliştiri
 -   [Expression İçinde throw Kullanımı](#expression-i̇çinde-throw-kullanımı)
 -   [Catch İfadesinde İsteğe Bağlı Hata Değişkeni](#catch-i̇fadesinde-i̇steğe-bağlı-hata-değişkeni)
 -   [Son Parametreden Sonra Virgül Kullanımı](#son-parametreden-sonra-virgül-kullanımı)
--   [WeakMap Sınıfı](#weakmap-sınıfı)
+-   [Yeni Sınıf: WeakMap](#yeni-sınıf-weakmap)
 -   [Yeni Interface: `Stringable`](#yeni-interface-stringable)
 -   [Yeni Fonksiyon: `str_contains`](#yeni-fonksiyon-str_contains)
 -   [Yeni Fonksiyonlar: `str_starts_with`, `str_ends_with`](#yeni-fonksiyonlar-str_starts_with-str_ends_with)
+-   [Yeni Fonksiyon: `fdiv`](#yeni-fonksiyon-fdiv)
+-   [Yeni Fonksiyon: `get_debug_type`](#yeni-fonksiyon-get_debug_type)
+-   [Yeni Fonksiyon: `get_resource_id`](#yeni-fonksiyon-get_resource_id)
 
 ## JIT Compiler
 
@@ -603,7 +606,7 @@ function foo(
     </a>
 </Collapsable>
 
-## WeakMap Sınıfı
+## Yeni Sınıf: WeakMap
 
 WeakMap, objelerin referansını tutmamızı ve kullanılmadığı taktirde bellekten otomatik olarak silinmesini (garbage collected) sağlayan bir sınıftır. <a href="https://www.php.net/manual/en/class.splobjectstorage.php" target="_blank" rel="nofollow noopener noreferrer">`SplObjectStorage`</a> sınıfına benzer şekilde çalışmaktadır ama WeakMap ile referansını tuttuğumuz objeler kullanılmadığı zaman bellekten silinerek olası bellek sızıntısının önüne geçmemize yardımcı olmaktadır.
 
@@ -782,5 +785,103 @@ if (str_ends_with($haystack, $needle)) {
         rel="nofollow noopener noreferrer"
     >
         Add str_starts_with() and str_ends_with() functions
+    </a>
+</Collapsable>
+
+## Yeni Fonksiyon: `fdiv`
+
+PHP 8'den önceki versiyonlarda bir sayıyı sıfıra bölmeye çalıştığımızda _"Warning: Division by zero in..."_ şeklinde uyarı, PHP 8'den itibaren ise <a href="https://www.php.net/manual/en/class.divisionbyzeroerror.php" target="_blank" rel="nofollow noopener noreferrer">`DivisionByZeroError`</a> hatası alırız. <a href="https://en.wikipedia.org/wiki/IEEE_754" target="_blank" rel="nofollow noopener noreferrer">IEEE 754</a> standartına uygun olarak geliştirilen `fdiv` fonksiyonu ile bir sayıyı sıfıra böldüğümüzde hata/uyarı vermek yerine `INF`, `-INF` veya `NAN` döndürecek.
+
+```php
+var_dump(fdiv(1, 0)); // float(INF)
+var_dump(fdiv(-1, 0)); // float(-INF)
+var_dump(fdiv(0, 0)); // float(NAN)
+```
+
+<Collapsable title="PR" titleSize="1rem">
+    <a
+        href="https://github.com/php/php-src/pull/4769"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Add fdiv() function
+    </a>
+</Collapsable>
+
+## Yeni Fonksiyon: `get_debug_type`
+
+Bir değişkenin tipini öğrenmek için <a href="https://www.php.net/manual/en/function.gettype.php" target="_blank" rel="nofollow noopener noreferrer">`gettype`</a> fonksiyonunu kullanıyorduk. Ama değişken bir obje/sınıf veya fonksiyon ise <a href="https://www.php.net/manual/en/function.gettype.php" target="_blank" rel="nofollow noopener noreferrer">`gettype`</a> pek de anlamlı sonuç vermemektedir.
+
+Örneğin, uygulamamızda herhangi bir sınıfın <a href="https://www.php.net/manual/en/function.gettype.php" target="_blank" rel="nofollow noopener noreferrer">`gettype`</a> ile tipini almak istediğimizde `object` döndürecektir. Sınıf ismini öğrenmek istediğimizde ise <a href="https://www.php.net/manual/en/function.get-class.php" target="_blank" rel="nofollow noopener noreferrer">`get_class`</a> fonksiyonunu kullanmamız gerekecektir. Dolayısıyla şuna benzer bir süreçten geçmiş olacağız:
+
+```php
+// PHP 7 ve öncesi 👎
+
+$type = is_object($foo) ? get_class($foo) : gettype($foo);
+```
+
+`get_debug_type` fonksiyonu bize daha açıklayıcı sonuç verecektir:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$type = get_debug_type($foo);
+```
+
+Aşağıdaki tablo incelendiğinde arasındaki farklar daha net anlaşılacaktır.
+
+| Tip          | Örnek Değer                | `gettype`  | `get_debug_type`    |
+| ------------ | -------------------------- | ---------- | ------------------- |
+| Integer      | `123`                      | `integer`  | `int`               |
+| Float        | `3.14`                     | `double`   | `float`             |
+| Boolean      | `true`                     | `boolean`  | `bool`              |
+| Boolean      | `false`                    | `boolean`  | `bool`              |
+| String       | `'Foo'`                    | `string`   | `string`            |
+| Array        | `[1, 2, 3]`                | `array`    | `array`             |
+| Null         | `null`                     | `NULL`     | `null`              |
+| Sınıf        | `new Foo\Bar()`            | `object`   | `Foo\Bar`           |
+| Sınıf        | `new DateTime()`           | `object`   | `DateTime`          |
+| Anonim Sınıf | `new class {}`             | `object`   | `class@anonymous`   |
+| Anonim Sınıf | `new class extends Foo {}` | `object`   | `Foo@anonymous`     |
+| Closure      | `function() {}`            | `object`   | `Closure`           |
+| Stream       | `tmpfile()`                | `resource` | `resource (stream)` |
+| Curl         | `curl_init()`              | `resource` | `resource (curl)`   |
+| Xml          | `xml_parser_create()`      | `resource` | `resource (xml)`    |
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/get_debug_type"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        get_debug_type
+    </a>
+</Collapsable>
+
+## Yeni Fonksiyon: `get_resource_id`
+
+PHP'de veritabanı/FTP/LDAP bağlantısı veya dosya açma/okuma/yazma gibi harici kaynakları (resources) içinde barındıran değişkenlere otomatik olarak `int` tipinde ID atanmaktadır. Ve bu resource ID'sini şu şekilde öğreniyorduk:
+
+```php
+// PHP 7 ve öncesi 👎
+
+$resourceId = (int) $resource;
+```
+
+Artık resource değişkenini `int` tipine çevirmek yerine `get_resource_id` fonksiyonunu kullanabiliriz:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$resourceId = get_resource_id($resource);
+```
+
+<Collapsable title="PR" titleSize="1rem">
+    <a
+        href="https://github.com/php/php-src/pull/5427"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        get_debug_type
     </a>
 </Collapsable>

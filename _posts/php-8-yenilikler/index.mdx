@@ -1,0 +1,786 @@
+---
+title: PHP 8 Yenilikler
+date: 2020-12-06
+tags: [php]
+excerpt: PHP 8 ile gelen yeni özellikler
+draft: false
+---
+
+![](./poster.jpg)
+
+PHP, tüm eleştirilere rağmen özellikle son yıllarda aktif olarak geliştirilmekte ve geliştirildikçe de daha hızlı, daha stabil, daha güçlü bir dil hâline gelmektedir. Son olarak, <a href="https://www.php.net/releases/8.0/en.php" target="_blank" rel="nofollow noopener noreferrer">PHP 8 duyuruldu</a> ve hem dilin çekirdeğinde önemli düzeltmelerin, iyileştirmelerin yapıldığını hem de kullanışlı yeni özelliklerin getirildiğini görebiliriz.
+
+-   [JIT Compiler](#jit-compiler)
+-   [Union Types](#union-types)
+-   [Nullsafe Operatörü](#nullsafe-operatörü)
+-   [Named Arguments](#named-arguments)
+-   [Attributes](#attributes)
+-   [Constructor Property Promotion](#constructor-property-promotion)
+-   [Match Expression](#match-expression)
+-   [Yeni Return Tipi: `static`](#yeni-return-tipi-static)
+-   [Yeni Tip: `mixed`](#yeni-tip-mixed)
+-   [Objeler Üzerinde `::class` Kullanımı](#objeler-üzerinde-class-kullanımı)
+-   [Expression İçinde throw Kullanımı](#expression-i̇çinde-throw-kullanımı)
+-   [Catch İfadesinde İsteğe Bağlı Hata Değişkeni](#catch-i̇fadesinde-i̇steğe-bağlı-hata-değişkeni)
+-   [Son Parametreden Sonra Virgül Kullanımı](#son-parametreden-sonra-virgül-kullanımı)
+-   [WeakMap Sınıfı](#weakmap-sınıfı)
+-   [Yeni Interface: `Stringable`](#yeni-interface-stringable)
+-   [Yeni Fonksiyon: `str_contains`](#yeni-fonksiyon-str_contains)
+-   [Yeni Fonksiyonlar: `str_starts_with`, `str_ends_with`](#yeni-fonksiyonlar-str_starts_with-str_ends_with)
+
+## JIT Compiler
+
+PHP 8’in belki de en dikkat çekici ve heyecanlandırıcı yeniliği olan JIT (just in time) compiler, uygulamalarımızın performansını önemli ölçüde arttırmak amacıyla PHP’ye dâhil edilmiştir. Daha önce 3 kez bununla ilgili girişimler ve çalışmalar olmuş ama çeşitli nedenlerden dolayı bir türlü PHP’ye uygulanamamıştı. Nihayet PHP 8 için kolları sıvayan <a href="https://twitter.com/dstogov" target="_blank" rel="nofollow noopener noreferrer">Dmitry Stogov</a>’un çalışmaları sonucunda JIT compiler isteğe bağlı bir özellik olarak PHP’ye dâhil edildi.
+
+JIT compiler’ın ne olduğundan kısaca bahsetmek gerekirse, bildiğiniz gibi PHP çalışma sırasında (runtime) yorumlanan (interpreted) bir dildir. C, Go, Java gibi derlenen (compiled) bir dil değildir. JIT, kodun sıklıkla tekrarlanarak çalışan parçalarını (hot code) runtime sırasında makine koduna derler. Ve her defasında tekrar interprete etmek yerine o derlenmiş kod kullanılır. Bu da interprete işlemini azalttığı için uygulamada performans artışı sağlamaktadır. Bir nevi önbellekleme gibi düşünebiliriz.
+
+JIT compiler’ı etkinleştirmek için öncelikle OPcache eklentisinin aktif olması gerekmektedir. Bunun için `php.ini` dosyasında `opcache.enable=1` olarak ayarlamamız ve daha sonra `opcache.jit_buffer_size=1024M` şeklinde bellek ayırmamız gerekmektedir. Bunun varsayılan değeri 0, yani JIT compiler devre dışı olarak gelmektedir. Etkin olup olmadığından emin olamıyorsanız <a href="https://www.php.net/manual/en/function.opcache-get-status.php" target="_blank" rel="nofollow noopener noreferrer">`opcache_get_status`</a> fonksiyonunu kullanarak kontrol edebilirsiniz.
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/jit"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        JIT
+    </a>
+</Collapsable>
+
+## Union Types
+
+PHP'de eskiden çoklu tip belirtmeyi sadece 2 özel yöntemle yapabiliyorduk:
+
+-   `?TİP`: `null` veya belirtilen tip
+-   `iterable`: <a href="https://www.php.net/manual/en/language.types.array.php" target="_blank" rel="nofollow noopener noreferrer">`array`</a> veya <a href="https://www.php.net/manual/en/class.traversable.php" target="_blank" rel="nofollow noopener noreferrer">`Traversable`</a>
+
+Veya bunu yapmak için phpdoc annotation kullanıyorduk:
+
+```php
+// PHP 7 ve öncesi 👎
+
+class Product
+{
+    /**
+     * @var int|float $price
+     */
+	protected $price;
+
+    /**
+     * @param int|float $price
+     */
+	public function setPrice($price): void
+	{
+		$this->price = $price;
+	}
+
+    /**
+     * @return int|float
+     */
+	public function getPrice()
+	{
+		return $this->price;
+	}
+}
+```
+
+PHP 8 ile beraber metodlarda ve fonksiyonlarda birden fazla dönüş tipi veya parametre tipi, sınıflarda ise birden fazla property tipi tanımlayabileceğiz artık:
+
+```php
+// PHP 8 ve sonrası 👍
+
+class Product
+{
+	protected int|float $price; // highlight-line
+
+	public function setPrice(int|float $price): void // highlight-line
+	{
+		$this->price = $price;
+	}
+
+	public function getPrice(): int|float // highlight-line
+	{
+		return $this->price;
+	}
+}
+```
+
+`void` tipi hiçbir değer döndürmeyen metodlarda/fonksiyonlarda kullanıldığı için buna dâhil değil ve tek başına kullanılmaya devam edecektir.
+
+Buna ek olarak, `bool` tipi ile beraber `false` değerini de çoklu tip belirtmede kullanabileceğiz. Peki `bool` tipi varken neden `false` ile belirtelim ki?! Çünkü bazı PHP fonksiyonları alternatif olarak `false` değerini döndürmektedir. Örneğin, <a href="https://www.php.net/manual/en/function.strpos.php" target="_blank" rel="nofollow noopener noreferrer">`strpos`</a> fonksiyonu `int|false` veya <a href="https://www.php.net/manual/en/function.substr.php" target="_blank" rel="nofollow noopener noreferrer">`substr`</a> fonksiyonu `string|false` değerlerini döndürmektedir.
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/union_types_v2"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Union Types 2.0
+    </a>
+</Collapsable>
+
+## Nullsafe Operatörü
+
+Değeri `null` olan veya tanımlanmamış property'yi/değişkeni <a href="https://www.php.net/manual/en/function.isset.php" target="_blank" rel="nofollow noopener noreferrer">`isset`</a> fonksiyonu veya `??` operatörü ile kontrol ediyorduk. Bu durum bazen iç içe `if` kullanmamıza neden olmaktadır ki kodumuzu çirkinleştirerek okunurluğunu düşürmektedir. Örneğin, aşağıdaki kodu inceleyelim:
+
+```php
+// PHP 7 ve öncesi 👎
+
+if (isset($session)) {
+    $user = $session->user;
+
+    if ($user !== null) {
+        $address = $user->getAddress();
+
+        if ($address !== null) {
+            $country = $address->getCountry();
+
+            // ...
+        }
+    }
+}
+```
+
+PHP 8 ile beraber bu kodu şu şekilde güzelleştirebiliriz:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$country = $session?->user?->getAddress()?->getCountry();
+
+// ...
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/nullsafe_operator"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Nullsafe operator
+    </a>
+</Collapsable>
+
+## Named Arguments
+
+PHP 8'de fonksiyonları veya metodları kullanırken parametreleri _sırasına_ göre değil de _ismine_ göre gönderebiliriz. Özellikle de fazla parametre alan fonksiyonları kullanırken parametre sırasını dikkate almamıza gerek kalmayacak ve isteğe bağlı olan parametreleri atlayabilmemizi sağlayacaktır.
+
+Örnek olarak <a href="https://www.php.net/manual/en/function.setcookie.php" target="_blank" rel="nofollow noopener noreferrer">`setcookie`</a> fonksiyonunu düşünebiliriz. Bu fonksiyon, biri zorunlu olmak üzere toplam 7 parametre almaktadır. Son sıradaki parametreyi (`httponly`) özelleştirmek istediğimizde ondan öncekileri de belirtmek zorundayız:
+
+```php
+// PHP 7 ve öncesi 👎
+
+setcookie('test', '123', 0, '', '', false, true);
+
+```
+
+PHP 8 itibarıyla bu ve benzeri durumlarda parametreleri istediğimiz sırada gönderebiliriz:
+
+```php
+// PHP 8 ve sonrası 👍
+
+setcookie(name: 'test', value: '123', httponly: true);
+
+// veya
+
+setcookie(httponly: true, name: 'test', value: '123');
+
+// veya (hem sıraya hem isme göre)
+
+setcookie('test', '123', httponly: true);
+```
+
+Gördüğünüz gibi burada isteğe bağlı olan 4 parametreyi (`expires`, `path`, `domain`, `secure`) atlamış olduk. Ayrıca, hangi parametreyi gönderdiğimizi ismiyle belirttiğimiz için daha sonra kodumuzu okuduğumuzda tekrar tekrar dokümantasyona bakmamıza gerek kalmayacak.
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/named_params"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Named Arguments
+    </a>
+</Collapsable>
+
+## Attributes
+
+JavaScript ve Python'da Decorators, Java'da Annotations olarak bilinen bu özellik PHP'ye sonunda _Attributes_ olarak geldi. Daha önceki sürümlerde birkaç kez önerilmiş ancak yeterli oy alamaması nedeniyle vazgeçilmişti.
+
+Attributes, kısaca sınıflara, metodlara, property'lere, değişkenlere veya fonksiyonlara metadata eklememize yardımcı olmaktadır. Eskiden bu işlemi docblock kullanarak yapıyorduk.
+
+PHP'de dockblock'ları annotation olarak hiç kullanmadım ama Symfony framework'ünün routing sisteminden örnek vermek istiyorum. Symfony'de routing controller içinde metodlara docblock eklenerek tanımlanabilmektedir:
+
+```php:title=src/Controller/PostController.php
+// PHP 7 ve öncesi 👎
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class PostController extends AbstractController
+{
+    // ...
+
+    /**
+     * @Route("/posts/{slug}", name="posts_show")
+     */
+    public function show(string $slug): Response
+    {
+        // ...
+    }
+
+    // ...
+}
+```
+
+Artık dockblock ekleyerek bunu manuel parse etmek yerine PHP Attributes ile tanışalım:
+
+```php:title=src/Controller/PostController.php
+// PHP 8 ve sonrası 👍
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class PostController extends AbstractController
+{
+    // ...
+
+    #[Route('/posts/{slug}', name: 'posts_show')]
+    public function show(string $slug): Response
+    {
+        // ...
+    }
+
+    // ...
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/attributes_v2"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Attributes v2
+    </a>
+</Collapsable>
+
+## Constructor Property Promotion
+
+Bir sınıf içinde property'leri tanımladıktan sonra constructor'da gelen parametrelerin değerlerini o property'lere şu şekilde atayabiliyorduk:
+
+```php
+// PHP 7 ve öncesi 👎
+
+class User
+{
+    protected string $firstName;
+    protected string $lastName;
+    protected string $email;
+
+    public function __construct(string $firstName, string $lastName, string $email)
+    {
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->email = $email;
+    }
+}
+```
+
+<a
+    href="https://docs.hhvm.com/hack/classes/constructors#constructor-parameter-promotion"
+    target="_blank"
+    rel="nofollow noopener noreferrer"
+>
+    Hack
+</a> dilinden esinlenilerek geliştirilmiş olan bu özellik sayesinde aynı işlemi daha kısa ve temiz şekilde yazabiliriz:
+
+```php
+// PHP 8 ve sonrası 👍
+
+class User
+{
+    public function __construct(
+        protected string $firstName,
+        protected string $lastName,
+        protected string $email,
+    ) {}
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/constructor_promotion"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Constructor Property Promotion
+    </a>
+</Collapsable>
+
+## Match Expression
+
+Klasik <a href="https://www.php.net/manual/en/control-structures.switch.php" target="_blank" rel="nofollow noopener noreferrer">`switch`</a> ifadesinin daha gelişmiş bir versiyonu olarak düşünebiliriz.
+
+Aralarındaki farklar ise kısaca şu şekilde:
+
+-   `macth` ifadesinde `break` yok. 😋
+-   `match` strict (===) karşılaştırma yaparken, `switch` loose (==) karşılaştırma yapar. 😍
+-   `match` eşleşen değeri döndürür, `switch` ile her case için değişken atamayı manuel yaparız. 🤩
+-   `match` ifadesine eşleşmeyen değer geldiğinde ölümcül hatalardan <a href="https://www.php.net/manual/en/class.unhandledmatcherror.php" target="_blank" rel="nofollow noopener noreferrer">`UnhandledMatchError`</a> fırlatılır, `switch` ile bunu `default` içinde yapabiliyoruz. 🤤
+
+`match` ifadesinin üstünlüğünü ve faydalarını bariz bir şekilde görebiliriz. Bug ve hatalardan kaçınmamıza inanılmaz yardımcı olacağını düşünüyorum.
+
+```php
+// PHP 7 ve öncesi 👎
+
+$abbreviation = 'PHP';
+$meaning = '';
+
+switch ($abbreviation) {
+    case 'HTML':
+        $meaning = 'Hyper Text Markup Language';
+        break;
+    case 'CSS':
+        $meaning = 'Cascading Style Sheets';
+        break;
+    case 'PHP':
+        $meaning = 'PHP: Hypertext Preprocessor';
+        break;
+}
+
+var_dump($meaning); // PHP: Hypertext Preprocessor
+```
+
+Bunu `match` expression ile çok daha güzel şekilde yazabiliriz:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$abbreviation = 'PHP';
+
+$meaning = match ($abbreviation) {
+    'HTML' => 'Hyper Text Markup Language',
+    'CSS'  => 'Cascading Style Sheets',
+    'PHP'  => 'PHP: Hypertext Preprocessor',
+};
+
+var_dump($meaning); // PHP: Hypertext Preprocessor
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/match_expression_v2"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Match expression v2
+    </a>
+</Collapsable>
+
+## Yeni Return Tipi: `static`
+
+Önceleri return tipi olarak `parent` ve `self` kullanabiliyorduk. PHP 8 ile beraber `static` tipini de return tipi olarak kullanabileceğiz.
+
+```php
+class App
+{
+    public function create(): static
+    {
+        return new static;
+
+        // veya
+
+        return $this;
+    }
+}
+```
+
+`static` bazı çelişkilere neden olacağı için parametre veya property tipi olarak kullanılamamaktadır, şimdilik sadece return tipi olarak kullanılabilmektedir.
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/static_return_type"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Static return type
+    </a>
+</Collapsable>
+
+## Yeni Tip: `mixed`
+
+Adından da anlaşılacağı gibi _herhangi bir tip_ demektir. Yani, `mixed` tipi aşağıdakilerden herhangi birisi olabilir:
+
+-   `bool`
+-   `int`
+-   `double`
+-   `string`
+-   `array`
+-   `object`
+-   `resource`
+-   `callable`
+-   `null`
+
+`mixed` tipini kullanmak pek tavsiye edilmese de bazı durumlarda işimize yarayabilir. Buna belki de en iyi örnek <a href="https://www.php.net/manual/en/function.var-dump.php" target="_blank" rel="nofollow noopener noreferrer">`var_dump`</a>, <a href="https://www.php.net/manual/en/function.print-r.php" target="_blank" rel="nofollow noopener noreferrer">`print_r`</a>, <a href="https://www.php.net/manual/en/function.empty.php" target="_blank" rel="nofollow noopener noreferrer">`empty`</a> veya <a href="https://www.php.net/manual/en/function.gettype.php" target="_blank" rel="nofollow noopener noreferrer">`gettype`</a> fonksiyonları olabilir. Sadece parametre tipi olarak değil, property veya return tipi olarak da kullanılabilir.
+
+<a
+    href="https://github.com/symfony/var-dumper"
+    target="_blank"
+    rel="nofollow noopener noreferrer"
+>
+    Symfony var-dumper
+</a> gibi bir fonksiyon yazmak istediğimizi düşünelim. En sade haliyle şu şekilde olabilir:
+
+```php
+// PHP Union Types 👎
+
+function dd(bool|int|float|string|array|object|null $var): void // highlight-line
+{
+    var_dump($var);
+    exit();
+}
+```
+
+`mixed` tipine çevirelim:
+
+```php
+// PHP `mixed` Type 👍
+
+function dd(mixed $var): void // highlight-line
+{
+    var_dump($var);
+    exit();
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/mixed_type_v2"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Mixed Type v2
+    </a>
+</Collapsable>
+
+## Objeler Üzerinde `::class` Kullanımı
+
+Eskiden `User::class` gibi bir sınıfın tam ismini (namespace ile beraber) string olarak alabiliyorduk. Ama `$user::class` gibi değişken objesinden alamıyorduk. Bunun için <a href="https://www.php.net/manual/en/function.get-class.php" target="_blank" rel="nofollow noopener noreferrer">`get_class`</a> fonksiyonunu kullanıyorduk:
+
+```php
+// PHP 7 ve öncesi 👎
+
+$user = new App\Models\User;
+
+// ...
+
+var_dump(get_class($a)); // App\Models\User
+
+var_dump($user::class); // Fatal error: Cannot use ::class with dynamic class name
+```
+
+PHP 8 ile beraber bu mümkün olacak:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$user = new App\Models\User;
+
+// ...
+
+var_dump(get_class($a)); // App\Models\User
+
+var_dump($user::class); // App\Models\User
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/class_name_literal_on_object"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Allow ::class on objects
+    </a>
+</Collapsable>
+
+## Expression İçinde throw Kullanımı
+
+Eskiden expression (ifade) içinde hata fırlatamıyorduk. Bir değeri koşullu ifadelerle kontrol ederek onun sonucuna göre hata fırlatıp fırlatmayacağımıza karar veriyorduk.
+
+```php
+// PHP 7 ve öncesi 👎
+
+if (empty($_POST['email'])) {
+    throw new Exception('Email alanı zorunlu.');
+}
+
+$email = $_POST['email'];
+
+```
+
+PHP 8 itibarıyla throw ifadesinin artık kullanım kapsamı genişledi:
+
+```php
+// PHP 8 ve sonrası 👍
+
+$email = empty($_POST['email']) ? throw new Exception('Email alanı zorunlu.') : $_POST['email'];
+
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/throw_expression"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        throw expression
+    </a>
+</Collapsable>
+
+## Catch İfadesinde İsteğe Bağlı Hata Değişkeni
+
+PHP'de `catch` ile yakaladığımız hatayı kullansak da kullanmasak da değişken ile almak zorundayız:
+
+```php
+// PHP 7 ve öncesi 👎
+
+try {
+    // Hata ihtimali olan kod(lar)
+} catch (Exception $e) { // highlight-line
+    echo $e->getMessage();
+}
+```
+
+Eğer hata objesini kullanmak istemiyorsak artık değişken ile almak zorunda kalmayacağız:
+
+```php
+// PHP 8 ve sonrası 👍
+
+try {
+    // Hata ihtimali olan kod(lar)
+} catch (Exception) { // highlight-line
+    echo 'Hata oluştu.';
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/non-capturing_catches"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        non-capturing catches
+    </a>
+</Collapsable>
+
+## Son Parametreden Sonra Virgül Kullanımı
+
+Bir fonksiyon/metod _çağırırken_ gönderdiğimiz parametrelerin sonuna isteğe bağlı olarak virgül koyabiliyorduk ama _tanımlarken_ bunu yapamıyorduk. PHP 8 ile mümkün olacak:
+
+```php
+function foo(
+    string $foo,
+    string $bar,
+    string $baz,
+    string $qux, // highlight-line
+) {
+    // ...
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/trailing_comma_in_parameter_list"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Allow trailing comma in parameter list
+    </a>
+</Collapsable>
+
+## WeakMap Sınıfı
+
+WeakMap, objelerin referansını tutmamızı ve kullanılmadığı taktirde bellekten otomatik olarak silinmesini (garbage collected) sağlayan bir sınıftır. <a href="https://www.php.net/manual/en/class.splobjectstorage.php" target="_blank" rel="nofollow noopener noreferrer">`SplObjectStorage`</a> sınıfına benzer şekilde çalışmaktadır ama WeakMap ile referansını tuttuğumuz objeler kullanılmadığı zaman bellekten silinerek olası bellek sızıntısının önüne geçmemize yardımcı olmaktadır.
+
+Öncelikle <a href="https://www.php.net/manual/en/class.splobjectstorage.php" target="_blank" rel="nofollow noopener noreferrer">`SplObjectStorage`</a> örneğine bakalım:
+
+```php
+// PHP 7 ve öncesi 👎
+
+class User
+{
+    // Örnek obje
+}
+
+$map = new splObjectStorage();
+
+$object = new User();
+$map[$object] = 'User';
+
+var_dump(count($map)); // int(1)
+
+unset($object);
+
+var_dump(count($map)); // int(1)
+```
+
+Bunun yerine şimdi WeakMap kullanalım:
+
+```php
+// PHP 8 ve sonrası 👍
+
+class User
+{
+    // Örnek obje
+}
+
+$map = new WeakMap();
+
+$object = new User();
+$map[$object] = 'User';
+
+var_dump(count($map)); // int(1)
+
+unset($object);
+
+var_dump(count($map)); // int(0)
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/weak_maps"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Weak maps
+    </a>
+</Collapsable>
+
+## Yeni Interface: `Stringable`
+
+Eğer bir sınıf <a href="https://www.php.net/manual/en/language.oop5.magic.php#object.tostring" target="_blank" rel="nofollow noopener noreferrer">`__toString`</a> magic metodunu uyguluyorsa otomatik olarak `Stringable` interface'ini implement etmiş olacak.
+
+Örneğin, `string` tipinde parametre alan bir fonksiyon düşünelim. Bununla beraber <a href="https://www.php.net/manual/en/language.oop5.magic.php#object.tostring" target="_blank" rel="nofollow noopener noreferrer">`__toString`</a> metodunu uygulayarak `string` haline gelebilen sınıfları da o fonksiyon içinde kullanmak istiyoruz. Bu durumda `Stringable` interface kullanarak kodumuzun tip güvenirliğini (type-safe) arttırabiliriz:
+
+```php
+class Article
+{
+    // highlight-start
+    public function __toString(): string
+    {
+        return 'Article body';
+    }
+    // highlight-end
+}
+
+function safePrint(string|Stringable $input): void // highlight-line
+{
+    echo htmlspecialchars((string) $input);
+}
+
+safePrint(new Article()); // Article body
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/stringable"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Add Stringable interface
+    </a>
+</Collapsable>
+
+## Yeni Fonksiyon: `str_contains`
+
+Bir string içerisinde belirttiğimiz değerin olup olmadığını eskiden <a href="https://www.php.net/manual/en/function.strpos.php" target="_blank" rel="nofollow noopener noreferrer">`strpos`</a>, <a href="https://www.php.net/manual/en/function.strstr.php" target="_blank" rel="nofollow noopener noreferrer">`strstr`</a> veya <a href="https://www.php.net/manual/en/function.preg-match.php" target="_blank" rel="nofollow noopener noreferrer">`preg_match`</a> fonksiyonlarını kullanarak tespit ederdik:
+
+```php
+// PHP 7 ve öncesi 👎
+
+$haystack = 'PHP is PHPantastic.';
+$needle = 'PHP';
+
+if ($needle === '' || strpos($haystack, $needle) !== false) {
+    // $haystack içinde $needle geçiyor.
+}
+```
+
+Artık PHP'de bu işleme özel bir fonksiyon olacak: 🎉
+
+```php
+// PHP 8 ve sonrası 👍
+
+$haystack = 'PHP is PHPantastic.';
+$needle = 'PHP';
+
+if (str_contains($haystack, $needle)) {
+    // $haystack içinde $needle geçiyor.
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/str_contains"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        str_contains
+    </a>
+</Collapsable>
+
+## Yeni Fonksiyonlar: `str_starts_with`, `str_ends_with`
+
+Belirttiğimiz bir değerin string'in sonunda veya başında olup olmadığını kontrol etmemize olanak sağlayan fonskiyonlardır.
+
+Eskiden bu işlemler için <a href="https://www.php.net/manual/en/function.substr.php" target="_blank" rel="nofollow noopener noreferrer">`substr`</a>, <a href="https://www.php.net/manual/en/function.strpos.php" target="_blank" rel="nofollow noopener noreferrer">`strpos`</a>/<a href="https://www.php.net/manual/en/function.strrpos.php" target="_blank" rel="nofollow noopener noreferrer">`strrpos`</a>, <a href="https://www.php.net/manual/en/function.strncmp.php" target="_blank" rel="nofollow noopener noreferrer">`strncmp`</a> veya <a href="https://www.php.net/manual/en/function.substr-compare.php" target="_blank" rel="nofollow noopener noreferrer">`substr_compare`</a> gibi fonksiyonlardan yararlanırdık.
+
+-   `str_starts_with`: "string, belirttiğimiz değer ile başlıyor mu?" sorusuna cevap verir.
+-   `str_ends_with`: "string, belirttiğimiz değer ile bitiyor mu?" sorusuna cevap verir.
+
+```php
+// PHP 7 ve öncesi 👎
+
+$haystack = 'PHP is PHPantastic.';
+$needle = 'PHP';
+
+if ($needle === '' || strncmp($haystack, $needle, strlen($needle)) === 0) {
+    // $haystack, $needle ile başlıyor.
+}
+
+if ($needle === '' || $needle === substr($haystack, - strlen($needle))) {
+    // $haystack, $needle ile bitiyor.
+}
+```
+
+Artık bunun yerine şu şekilde yazabileceğiz: 🥳
+
+```php
+// PHP 8 ve sonrası 👍
+
+$haystack = 'PHP is PHPantastic.';
+$needle = 'PHP';
+
+if (str_starts_with($haystack, $needle)) {
+    // $haystack, $needle ile başlıyor.
+}
+
+if (str_ends_with($haystack, $needle)) {
+    // $haystack, $needle ile bitiyor.
+}
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/add_str_starts_with_and_ends_with_functions"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Add str_starts_with() and str_ends_with() functions
+    </a>
+</Collapsable>

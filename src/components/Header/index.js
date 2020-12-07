@@ -12,7 +12,7 @@ const Header = ({ siteTitle, showTitle, isPostTemplate }) => {
             {isPostTemplate && <ProgressBar />}
 
             <StyledMainHeaderInner className="main-header-inner">
-                <h1 style={{ fontSize: '1.5rem' }}>
+                <h1 style={{ fontSize: '1.25rem' }}>
                     {showTitle && <Link to="/">{`${siteTitle}`}</Link>}
                 </h1>
                 <StyledMediaIcons>

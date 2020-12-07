@@ -23,13 +23,15 @@ PHP, tüm eleştirilere rağmen özellikle son yıllarda aktif olarak geliştiri
 -   [Expression İçinde throw Kullanımı](#expression-i̇çinde-throw-kullanımı)
 -   [Catch İfadesinde İsteğe Bağlı Hata Değişkeni](#catch-i̇fadesinde-i̇steğe-bağlı-hata-değişkeni)
 -   [Son Parametreden Sonra Virgül Kullanımı](#son-parametreden-sonra-virgül-kullanımı)
--   [Yeni Sınıf: WeakMap](#yeni-sınıf-weakmap)
+-   [Yeni Sınıf: `WeakMap`](#yeni-sınıf-weakmap)
+-   [Yeni Sınıf: `PhpToken` (`token_get_all()` Alternatifi)](#yeni-sınıf-phptoken-token_get_all-alternatifi)
 -   [Yeni Interface: `Stringable`](#yeni-interface-stringable)
 -   [Yeni Fonksiyon: `str_contains`](#yeni-fonksiyon-str_contains)
 -   [Yeni Fonksiyonlar: `str_starts_with`, `str_ends_with`](#yeni-fonksiyonlar-str_starts_with-str_ends_with)
 -   [Yeni Fonksiyon: `fdiv`](#yeni-fonksiyon-fdiv)
 -   [Yeni Fonksiyon: `get_debug_type`](#yeni-fonksiyon-get_debug_type)
 -   [Yeni Fonksiyon: `get_resource_id`](#yeni-fonksiyon-get_resource_id)
+-   [Fonksiyon Parametrelerindeki Tip Hatası Geliştirmeleri](#fonksiyon-parametrelerindeki-tip-hatası-geliştirmeleri)
 
 ## JIT Compiler
 
@@ -606,7 +608,7 @@ function foo(
     </a>
 </Collapsable>
 
-## Yeni Sınıf: WeakMap
+## Yeni Sınıf: `WeakMap`
 
 WeakMap, objelerin referansını tutmamızı ve kullanılmadığı taktirde bellekten otomatik olarak silinmesini (garbage collected) sağlayan bir sınıftır. <a href="https://www.php.net/manual/en/class.splobjectstorage.php" target="_blank" rel="nofollow noopener noreferrer">`SplObjectStorage`</a> sınıfına benzer şekilde çalışmaktadır ama WeakMap ile referansını tuttuğumuz objeler kullanılmadığı zaman bellekten silinerek olası bellek sızıntısının önüne geçmemize yardımcı olmaktadır.
 
@@ -661,6 +663,22 @@ var_dump(count($map)); // int(0)
         rel="nofollow noopener noreferrer"
     >
         Weak maps
+    </a>
+</Collapsable>
+
+## Yeni Sınıf: `PhpToken` (`token_get_all()` Alternatifi)
+
+`tokenizer` eklentisindeki <a href="https://www.php.net/manual/en/function.token-get-all.php" target="_blank" rel="nofollow noopener noreferrer">`token_get_all`</a> fonksiyonu PHP kodumuzu parser token türüne çevirmektedir. Bunun obje tabanlı alternatifi olarak geliştirilen `PhpToken` sınıfı PHP 8'e dâhil edilmiştir. Daha okunur olduğu ve daha az bellek tükettiği söylenmektedir.
+
+Açıkçası daha önce hiç kullanmadım ama hata mesajlarında hepimiz görmüşüzdür (Örneğin, `T_VARIABLE`, `T_INCLUDE`, `T_THROW` vs.). PHP parser token listesine <a href="https://www.php.net/manual/en/tokens.php" target="_blank" rel="nofollow noopener noreferrer">şuradan</a> bakabilirsiniz.
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/token_as_object"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Object-based token_get_all() alternative
     </a>
 </Collapsable>
 
@@ -883,5 +901,36 @@ $resourceId = get_resource_id($resource);
         rel="nofollow noopener noreferrer"
     >
         get_debug_type
+    </a>
+</Collapsable>
+
+## Fonksiyon Parametrelerindeki Tip Hatası Geliştirmeleri
+
+Kendi tanımladığımız fonksiyonlara yanlış tipte bir parametre gönderdiğimizde <a href="https://www.php.net/manual/en/class.typeerror.php" target="_blank" rel="nofollow noopener noreferrer">`TypeError`</a> hatasını almaktayız. Ama PHP içindeki ön tanımlı fonksiyonlar hata yerine uyarı vermekte, `null` veya `false` döndürmektedir. Örneğin:
+
+```php
+// PHP 7 ve öncesi 👎
+
+var_dump(strlen([])); // NULL
+// Warning: strlen() expects parameter 1 to be string, array given in...
+```
+
+Bu davranış `strict_types` aktif olmadığı durumlarda geçerlidir. Kullanıcı tanımlı fonksiyonlar ile tutarlılığı sağlamak adına PHP 8 ile beraber ön tanımlı fonskiyonlara
+(`strict_types` farketmeksizin) yanlış tipte parametre gönderildiğinde <a href="https://www.php.net/manual/en/class.typeerror.php" target="_blank" rel="nofollow noopener noreferrer">`TypeError`</a> hatası fırlatılacaktır.
+
+```php
+// PHP 8 ve sonrası 👍
+
+var_dump(strlen([]));
+// Fatal error: Uncaught TypeError: strlen(): Argument #1 ($str) must be of type string, array given in...
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/consistent_type_errors"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Consistent type errors for internal functions
     </a>
 </Collapsable>

@@ -30,8 +30,12 @@ PHP, tüm eleştirilere rağmen özellikle son yıllarda aktif olarak geliştiri
 -   [Yeni Fonksiyonlar: `str_starts_with`, `str_ends_with`](#yeni-fonksiyonlar-str_starts_with-str_ends_with)
 -   [Yeni Fonksiyon: `fdiv`](#yeni-fonksiyon-fdiv)
 -   [Yeni Fonksiyon: `get_debug_type`](#yeni-fonksiyon-get_debug_type)
+-   [Yeni Fonksiyon: `preg_last_error_msg`](#yeni-fonksiyon-preg_last_error_msg)
 -   [Yeni Fonksiyon: `get_resource_id`](#yeni-fonksiyon-get_resource_id)
 -   [Fonksiyon Parametrelerindeki Tip Hatası Geliştirmeleri](#fonksiyon-parametrelerindeki-tip-hatası-geliştirmeleri)
+-   [Sayı ve String Karşılaştırma Geliştirmeleri](#sayı-ve-string-karşılaştırma-geliştirmeleri)
+-   [Private Metodlarda Inheritance Kuralları](#private-metodlarda-inheritance-kuralları)
+-   [`substr`, `iconv_substr`, `grapheme_substr` Fonksiyonlarının Dönüş Değerleri](#substr-iconv_substr-grapheme_substr-fonksiyonlarının-dönüş-değerleri)
 
 ## JIT Compiler
 
@@ -405,7 +409,11 @@ class App
 }
 ```
 
+<Info>
+
 `static` bazı çelişkilere neden olacağı için parametre veya property tipi olarak kullanılamamaktadır, şimdilik sadece return tipi olarak kullanılabilmektedir.
+
+</Info>
 
 <Collapsable title="RFC" titleSize="1rem">
     <a
@@ -585,7 +593,7 @@ try {
 
 ## Son Parametreden Sonra Virgül Kullanımı
 
-Bir fonksiyon/metod _çağırırken_ gönderdiğimiz parametrelerin sonuna isteğe bağlı olarak virgül koyabiliyorduk ama _tanımlarken_ bunu yapamıyorduk. PHP 8 ile mümkün olacak:
+Bir fonksiyon/metod _çağırırken_ gönderdiğimiz parametrelerin sonuna isteğe bağlı olarak virgül koyabiliyorduk ama _tanımlarken_ bunu yapamıyorduk. PHP 8 ile bu mümkün olacak:
 
 ```php
 function foo(
@@ -876,6 +884,72 @@ Aşağıdaki tablo incelendiğinde arasındaki farklar daha net anlaşılacaktı
     </a>
 </Collapsable>
 
+## Yeni Fonksiyon: `preg_last_error_msg`
+
+Bildiğiniz gibi, PHP'de <a href="https://www.php.net/manual/en/ref.pcre.php" target="_blank" rel="nofollow noopener noreferrer">`preg_` ile başlayan fonksiyonları</a> kullanarak regex işlemleri yapabiliyoruz. Ama bu fonksiyonlar, işlem sırasında hata oluştuğunda herhangi bir hata mesajı döndürmemektedirler. Sadece <a href="https://www.php.net/manual/en/ref.pcre.php" target="_blank" rel="nofollow noopener noreferrer">`preg_last_error`</a> fonksiyonunu kullanarak çıkan hatanın kodunu alabiliyorduk. Tam olarak çıkan hatayı anlamak için şuna benzer bir yöntem izliyorduk:
+
+```php
+// PHP 7 ve öncesi 👎
+
+preg_match('/(?:\D+|<\d+>)*[!?]/', 'foobar foobar foobar');
+
+$message = '';
+
+switch (preg_last_error()) {
+    case PREG_NO_ERROR: // 0
+        $message = 'No error';
+        break;
+    case PREG_INTERNAL_ERROR: // 1
+        $message = 'Internal error';
+        break;
+    case PREG_BACKTRACK_LIMIT_ERROR: // 2
+        $message = 'Backtrack limit exhausted';
+        break;
+    case PREG_RECURSION_LIMIT_ERROR: // 3
+        $message = 'Recursion limit exhausted';
+        break;
+    case PREG_BAD_UTF8_ERROR: // 4
+        $message = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+        break;
+    case PREG_BAD_UTF8_OFFSET_ERROR: // 5
+        $message = 'The offset did not correspond to the beginning of a valid UTF-8 code point';
+        break;
+    case PREG_JIT_STACKLIMIT_ERROR: // 6
+        $message = 'JIT stack limit exhausted';
+        break;
+    default:
+        $message = 'Unknown error';
+}
+
+echo $message; // Backtrack limit exhausted
+```
+
+Yeni gelen `preg_last_error_msg` fonksiyonu sayesinde artık oluşan hatayı bu şekilde tespit etmemize gerek kalmayacak:
+
+```php
+// PHP 8 ve sonrası 👍
+
+preg_match('/(?:\D+|<\d+>)*[!?]/', 'foobar foobar foobar');
+
+echo preg_last_error_msg(); // Backtrack limit exhausted
+```
+
+<Info>
+
+Hata oluşmadığı durumlarda bu fonksiyon **"No error"** mesajı döndürmektedir.
+
+</Info>
+
+<Collapsable title="PR" titleSize="1rem">
+    <a
+        href="https://github.com/php/php-src/pull/5185"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Add preg_last_error_msg() function
+    </a>
+</Collapsable>
+
 ## Yeni Fonksiyon: `get_resource_id`
 
 PHP'de veritabanı/FTP/LDAP bağlantısı veya dosya açma/okuma/yazma gibi harici kaynakları (resources) içinde barındıran değişkenlere otomatik olarak `int` tipinde ID atanmaktadır. Ve bu resource ID'sini şu şekilde öğreniyorduk:
@@ -932,5 +1006,131 @@ var_dump(strlen([]));
         rel="nofollow noopener noreferrer"
     >
         Consistent type errors for internal functions
+    </a>
+</Collapsable>
+
+## Sayı ve String Karşılaştırma Geliştirmeleri
+
+PHP'de sayılarla string'leri `==`, `!=` veya diğer strict olmayan yöntemleri (`>`, `>=`, `<`, `<=`, `<=>`) kullanarak karşılaştırma yaptığımızda bazen beklenmeyen sonuçlarla karşılaşabiliyoruz. Çünkü bu durumlarda PHP otomatik olarak tip dönüştürmesini yapmaktadır. Daha iyi kavramak için aşağıdaki örneği inceleyelim:
+
+```php
+// PHP 7 ve öncesi 👎
+
+var_dump(0 == ''); // true
+var_dump(0 == 'abc'); // true
+var_dump(12 == '12abc'); // true
+var_dump(0 == 'abc12'); // true
+
+var_dump(in_array(0, ['foo', 'bar', 'baz'])); // true 😱
+```
+
+PHP 8'den itibaren strict olmayan karşılaştırma yöntemleri kullanıldığında eğer string tam olarak sayısal değere sahipse sayısal karşılaştırma, değilse de sayı olan taraf otomatik string'e çevirilerek karşılaştırma yapılacak. Dolayısıyla, üstteki örnek aşağıdaki gibi çıktı üretecektir:
+
+```php
+// PHP 8 ve sonrası 👍
+
+var_dump(0 == ''); // false
+var_dump(0 == 'abc'); // false
+var_dump(12 == '12abc'); // false
+var_dump(0 == 'abc12'); // false
+
+var_dump(in_array(0, ['foo', 'bar', 'baz'])); // false 🤩
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/string_to_number_comparison"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Saner string to number comparisons
+    </a>
+</Collapsable>
+
+## Private Metodlarda Inheritance Kuralları
+
+PHP'de bir sınıf içindeki public, protected ve private metodların hepsi için aynı inheritance kuralları geçerlidir. Aslında bu private metodlar için pek de mantıklı bir davranış değil çünkü private metodlar sadece tanımlandığı sınıf içinde erişilebilir/kullanılabilir. Örneğin, bir sınıf içinde `final private` olarak bir metod tanımlamak mantıksız çünkü alt sınıftan zaten erişilemeyecek ve dolayısıyla herhangi bir override söz konusu değil.
+
+```php
+// PHP 7 ve öncesi 👎
+
+class Foo
+{ 
+    final private function test() { 
+        // ...
+    } 
+} 
+ 
+class Bar extends Foo
+{ 
+    private function test() { 
+        // ...
+    } 
+}
+
+// Fatal error: Cannot override final method Foo::test() in...
+```
+
+PHP 8'de private metodlar için inheritance kuralları kaldırıldı ve `final private` olarak tanımlanan metodlar için hata yerine sadece uyarı verilecek:
+
+```php
+// PHP 8 ve sonrası 👍
+
+class Foo
+{ 
+    final private function test() { 
+        // ...
+    } 
+} 
+ 
+class Bar extends Foo
+{ 
+    private function test() { 
+        // ...
+    } 
+}
+
+// Warning: Private methods cannot be final as they are never overridden by other classes in...
+```
+
+<Collapsable title="RFC" titleSize="1rem">
+    <a
+        href="https://wiki.php.net/rfc/inheritance_private_methods"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Remove inappropriate inheritance signature checks on private methods
+    </a>
+</Collapsable>
+
+## `substr`, `iconv_substr`, `grapheme_substr` Fonksiyonlarının Dönüş Değerleri
+
+PHP'de <a href="https://www.php.net/manual/en/function.substr.php" target="_blank" rel="nofollow noopener noreferrer">`substr`</a>, <a href="https://www.php.net/manual/en/function.iconv-substr.php" target="_blank" rel="nofollow noopener noreferrer">`iconv_substr`</a> ve <a href="https://www.php.net/manual/en/function.grapheme-substr.php" target="_blank" rel="nofollow noopener noreferrer">`grapheme_substr`</a> fonksiyonları bir string değerinin belirli parçasını almamızı sağlamaktadır. İstediğimiz parçanın bulunamadığı durumlarda `false` döndürmektedir:
+
+```php
+// PHP 7 ve öncesi 👎
+
+var_dump(substr('abc', 12)); // false
+var_dump(iconv_substr('abc', 12)); // false
+var_dump(grapheme_substr('abc', 12)); // false
+```
+
+String işlemleri yapan bu fonksiyonların `boolean` değer döndürmesi pek de mantıklı değil. Bundan sonra benzeri durumlarda boş string (`''`) döndürecek:
+
+```php
+// PHP 8 ve sonrası 👍
+
+var_dump(substr('abc', 12)); // ""
+var_dump(iconv_substr('abc', 12)); // ""
+var_dump(grapheme_substr('abc', 12)); // ""
+```
+
+<Collapsable title="PR" titleSize="1rem">
+    <a
+        href="https://github.com/php/php-src/pull/6182"
+        target="_blank"
+        rel="nofollow noopener noreferrer"
+    >
+        Normalize substr() behavior
     </a>
 </Collapsable>

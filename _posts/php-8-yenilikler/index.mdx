@@ -36,6 +36,8 @@ PHP, tüm eleştirilere rağmen özellikle son yıllarda aktif olarak geliştiri
 -   [Sayı ve String Karşılaştırma Geliştirmeleri](#sayı-ve-string-karşılaştırma-geliştirmeleri)
 -   [Private Metodlarda Inheritance Kuralları](#private-metodlarda-inheritance-kuralları)
 -   [`substr`, `iconv_substr`, `grapheme_substr` Fonksiyonlarının Dönüş Değerleri](#substr-iconv_substr-grapheme_substr-fonksiyonlarının-dönüş-değerleri)
+-   [`+`/`-` ve `.` Operatörleri İşlem Önceliği](#--ve--operatörleri-i̇şlem-önceliği)
+-   [Dinamik Port Desteği](#dinamik-port-desteği)
 
 ## JIT Compiler
 
@@ -1134,3 +1136,47 @@ var_dump(grapheme_substr('abc', 12)); // ""
         Normalize substr() behavior
     </a>
 </Collapsable>
+
+## `+`/`-` ve `.` Operatörleri İşlem Önceliği
+
+Bir ifade içinde parantez olmadan `+`/`-` ve `.` operatörleri beraber kullanıldığında işlem önceliği `+`/`-` operatörünün olacak.
+
+PHP 7.4, bu tarz kullanımlarda "Deprecated" uyarısı veriyordu:
+
+```php
+// PHP 7 ve öncesi 👎
+
+echo 12 + 3 . '.' . 0 + 4; // 19
+
+// Deprecated: The behavior of unparenthesized expressions containing both '.' and '+'/'-' will change in PHP 8: '+'/'-' will take a higher precedence in... (PHP 7.4)
+```
+
+PHP 8'de herhangi bir uyarı olmayacak ve `+`/`-` operatörü işlem önceliğine sahip olacak:
+
+```php
+// PHP 8 ve sonrası 👍
+
+echo 12 + 3 . '.' . 0 + 4; // 15.4
+```
+
+## Dinamik Port Desteği
+
+Eskiden PHP built-in web sunucusunu başlatırken port belirtmemiz gerekiyordu:
+
+```bash
+$ php -S localhost:8000
+
+[Fri Dec 11 13:46:30 2020] PHP 8.0.0 Development Server (http://localhost:8000) started
+```
+
+PHP 8'den itibaren port olarak `0` yazdığımızda sistemde kullanılmayan rastgele bir port üzerinde sunucu başlatılacaktır:
+
+```bash
+$ php -S localhost:0
+
+[Fri Dec 11 13:46:35 2020] PHP 8.0.0 Development Server (http://localhost:56522) started
+```
+
+<Info>
+    Rastgele port seçme işlemi işletim sistemine göre değişiklik gösterebilir.
+</Info>

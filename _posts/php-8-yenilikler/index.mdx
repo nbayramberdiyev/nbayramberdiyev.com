@@ -184,7 +184,7 @@ setcookie('test', '123', 0, '', '', false, true);
 
 ```
 
-PHP 8 itibarıyla bu ve benzeri durumlarda parametreleri istediğimiz sırada gönderebiliriz:
+PHP 8'den itibaren bu ve benzeri durumlarda parametreleri istediğimiz sırada gönderebiliriz:
 
 ```php
 // PHP 8 ve sonrası 👍
@@ -245,7 +245,7 @@ class PostController extends AbstractController
 }
 ```
 
-Artık dockblock ekleyerek bunu manuel parse etmek yerine PHP Attributes ile tanışalım:
+Artık dockblock ekleyerek bunu manuel parse etmek yerine **PHP Attributes** kullanabiliriz:
 
 ```php:title=src/Controller/PostController.php
 // PHP 8 ve sonrası 👍
@@ -339,7 +339,7 @@ Klasik <a href="https://www.php.net/manual/en/control-structures.switch.php" tar
 
 Aralarındaki farklar ise kısaca şu şekilde:
 
--   `macth` ifadesinde `break` yok. 😋
+-   `match` ifadesinde `break` yok. 😋
 -   `match` strict (===) karşılaştırma yaparken, `switch` loose (==) karşılaştırma yapar. 😍
 -   `match` eşleşen değeri döndürür, `switch` ile her case için değişken atamayı manuel yaparız. 🤩
 -   `match` ifadesine eşleşmeyen değer geldiğinde ölümcül hatalardan <a href="https://www.php.net/manual/en/class.unhandledmatcherror.php" target="_blank" rel="nofollow noopener noreferrer">`UnhandledMatchError`</a> fırlatılır, `switch` ile bunu `default` içinde yapabiliyoruz. 🤤

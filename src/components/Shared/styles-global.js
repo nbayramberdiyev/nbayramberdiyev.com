@@ -275,6 +275,10 @@ export const GlobalStyles = createGlobalStyle`
         }
     }
 
+    a.anchor-heading.before {
+        top: 8px;
+    }
+
     .tags {
         &-horizontal {
             -webkit-box-shadow: 0px 0px 7px -5px ${() =>
